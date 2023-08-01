@@ -86,6 +86,7 @@ public class MenuPermissionServiceImpl implements MenuPermissionService {
 
 	@Override
 	public List<String> listUserPermissions(Long userId, Integer sysType, boolean isAdmin) {
+		// 	在目标对象内部得到 AOP 代理对象
 		MenuPermissionServiceImpl menuPermissionService = (MenuPermissionServiceImpl)AopContext.currentProxy();
 		List<String> permsList;
 
@@ -121,8 +122,9 @@ public class MenuPermissionServiceImpl implements MenuPermissionService {
 	}
 
 	/**
-	 * 获取某个类型用户的所有权限列表（有缓存）
+	 * 根据 userId 及 sysType 获取某个类型用户的权限列表（有缓存）
 	 * @param sysType 系统类型
+	 * @param userId 系统类型
 	 * @return 权限列表
 	 */
 	@Cacheable(cacheNames = CacheNames.USER_PERMISSIONS_KEY, key = "#sysType + ':' + #userId")

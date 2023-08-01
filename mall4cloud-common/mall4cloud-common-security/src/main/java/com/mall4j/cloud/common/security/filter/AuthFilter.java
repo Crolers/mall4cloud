@@ -70,7 +70,7 @@ public class AuthFilter implements Filter {
 			return;
 		}
 
-
+		// 得到无需授权URI
 		List<String> excludePathPatterns = authConfigAdapter.excludePathPatterns();
 
 		// 如果匹配不需要授权的路径，就不需要校验是否需要授权

@@ -29,6 +29,7 @@ public class TokenController {
 	private MapperFacade mapperFacade;
 
 	@PostMapping("/ua/token/refresh")
+	// 前端定时调用该接口
 	public ServerResponseEntity<TokenInfoVO> refreshToken(@Valid @RequestBody RefreshTokenDTO refreshTokenDTO) {
 		ServerResponseEntity<TokenInfoBO> tokenInfoServerResponseEntity = tokenStore
 				.refreshToken(refreshTokenDTO.getRefreshToken());

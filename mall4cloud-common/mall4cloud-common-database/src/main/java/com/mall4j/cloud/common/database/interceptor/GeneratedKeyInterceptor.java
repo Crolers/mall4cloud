@@ -155,6 +155,7 @@ public class GeneratedKeyInterceptor implements Interceptor {
     @Override
     public Object plugin(Object o) {
         if (o instanceof Executor) {
+            // 代理对象将会拦截目标对象方法的调用。通过该方法生成一个动态代理对象，并将拦截器与目标对象关联起来。
             return Plugin.wrap(o, this);
         } else {
             return o;

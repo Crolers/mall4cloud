@@ -80,11 +80,13 @@ public class TokenStore {
 
 		Long size = redisTemplate.opsForSet().size(uidToAccessKeyStr);
 		if (size != null && size != 0) {
+			//  返回 uidToAccessKeyStr 对应 set 中所有元素，value 格式为（accessToken:refreshToken）
 			List<String> tokenInfoBoList = stringRedisTemplate.opsForSet().pop(uidToAccessKeyStr, size);
 			if (tokenInfoBoList != null) {
 				for (String accessTokenWithRefreshToken : tokenInfoBoList) {
 					String[] accessTokenWithRefreshTokenArr = accessTokenWithRefreshToken.split(StrUtil.COLON);
 					String accessTokenData = accessTokenWithRefreshTokenArr[0];
+					// 存入未过期的 accesstoken
 					if (BooleanUtil.isTrue(stringRedisTemplate.hasKey(getAccessKey(accessTokenData)))) {
 						existsAccessTokens.add(accessTokenWithRefreshToken);
 					}
@@ -110,7 +112,7 @@ public class TokenStore {
 			// 通过refresh_token获取用户的access_token从而刷新token
 			connection.setEx(refreshKey, expiresIn, accessToken.getBytes(StandardCharsets.UTF_8));
 
-			// 通过access_token保存用户的租户id，用户id，uid
+			// 通过access_token保存用户的 租户id，用户id，uid
 			connection.setEx(accessKey, expiresIn, Objects.requireNonNull(redisSerializer.serialize(userInfoInToken)));
 
 			return null;
@@ -159,6 +161,7 @@ public class TokenStore {
 		else {
 			realAccessToken = accessToken;
 		}
+		// 根据 AccessTokenKey 从 redis缓存中拿到用户信息
 		UserInfoInTokenBO userInfoInTokenBO = (UserInfoInTokenBO) redisTemplate.opsForValue()
 				.get(getAccessKey(realAccessToken));
 

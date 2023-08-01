@@ -28,7 +28,7 @@ public interface RbacCacheNames {
     String URI_PERMISSION_KEY = RBAC_PREFIX + "permission:uri_permissions:";
 
     /**
-     * uri对应的权限缓存key
+     * 菜单 缓存key
      */
     String MENU_LIST_KEY = RBAC_PREFIX + "menu:list:";
 
