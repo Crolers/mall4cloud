@@ -5,6 +5,7 @@ package com.mall4j.cloud.leaf.segment.model;
  */
 public class LeafAlloc {
 
+	// biz_tag
 	private String key;
 
 	private long maxId;

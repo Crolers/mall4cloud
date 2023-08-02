@@ -43,9 +43,11 @@ public class AccountFeignController implements AccountFeignClient {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
+    // token 管理实现类
     private TokenStore tokenStore;
 
     @Autowired
+    // 分布式 id 生成内部接口
     private SegmentFeignClient segmentFeignClient;
 
     @Override

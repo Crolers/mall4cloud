@@ -25,7 +25,9 @@ public class IDAllocDaoImpl implements IDAllocDao {
 		TransactionFactory transactionFactory = new JdbcTransactionFactory();
 		Environment environment = new Environment("development", transactionFactory, dataSource);
 		Configuration configuration = new Configuration(environment);
+		// 注册mapper
 		configuration.addMapper(IDAllocMapper.class);
+		// sqlSessionFactory 的生成：environment -> configuration -> sqlSessionFactory
 		sqlSessionFactory = new SqlSessionFactoryBuilder().build(configuration);
 	}
 

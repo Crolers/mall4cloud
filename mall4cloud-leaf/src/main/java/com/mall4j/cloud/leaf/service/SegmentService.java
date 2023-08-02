@@ -16,6 +16,7 @@ import javax.sql.DataSource;
  * @author left
  */
 @Service("SegmentService")
+// Service 通过 段号生成 + 段号分配DAO层实现类 实现
 public class SegmentService {
 
 	private final Logger logger = LoggerFactory.getLogger(SegmentService.class);

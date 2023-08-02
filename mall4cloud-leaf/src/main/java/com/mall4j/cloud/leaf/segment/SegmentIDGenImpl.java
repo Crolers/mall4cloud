@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * @author leaf
  */
+// leaf 分布式id生成（号段实现）实现类
 public class SegmentIDGenImpl implements IDGen {
 
 	private static final Logger logger = LoggerFactory.getLogger(SegmentIDGenImpl.class);
@@ -47,6 +48,7 @@ public class SegmentIDGenImpl implements IDGen {
 	 */
 	private static final long SEGMENT_DURATION = 15 * 60 * 1000L;
 
+	// 核心线程 5 个，多余空闲线程过期时间 60s
 	private final ExecutorService service = new ThreadPoolExecutor(5, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS,
 			new SynchronousQueue<>(), new UpdateThreadFactory());
 
@@ -144,16 +146,19 @@ public class SegmentIDGenImpl implements IDGen {
 	}
 
 	@Override
+	// key 即对应的 biz_tag
 	public Result get(final String key) {
 		if (!initOk) {
 			return new Result(EXCEPTION_ID_IDCACHE_INIT_FALSE, Status.EXCEPTION);
 		}
+		// 每个 biz_tag 对应一个 SegmentBuffer 发号缓存（内部双buffer实现）
 		SegmentBuffer buffer = cache.get(key);
 		if (buffer != null) {
 			if (buffer.isInitOk()) {
 				synchronized (buffer) {
 					if (buffer.isInitOk()) {
 						try {
+							// 更新当前号段 segment
 							updateSegmentFromDb(key, buffer.getCurrent());
 							logger.info("Init buffer. Update leafkey {} {} from db", key, buffer.getCurrent());
 							buffer.setInitOk(true);
@@ -200,6 +205,7 @@ public class SegmentIDGenImpl implements IDGen {
 				// do nothing with nextStep
 			}
 			else {
+				// 当前 segment 发号时间超过 30min，减小下一个所取号段的长度
 				nextStep = nextStep / DEFAULT_LOAD_FACTOR >= buffer.getMinStep() ? nextStep / DEFAULT_LOAD_FACTOR
 						: nextStep;
 			}
@@ -227,6 +233,7 @@ public class SegmentIDGenImpl implements IDGen {
 			buffer.rLock().lock();
 			try {
 				final Segment segment = buffer.getCurrent();
+				// 下一个 segment 不处于可切换状态且 当前 segment 空闲号码小于 step 的 90%
 				if (!buffer.isNextReady() && (segment.getIdle() < 0.9 * segment.getStep())
 						&& buffer.getThreadRunning().compareAndSet(false, true)) {
 					service.execute(new Runnable() {
@@ -281,6 +288,7 @@ public class SegmentIDGenImpl implements IDGen {
 				if (value < segment.getMax()) {
 					return new Result(value, Status.SUCCESS);
 				}
+				// 当前 segment 取完，切换到下一个 segment
 				if (buffer.isNextReady()) {
 					buffer.switchPos();
 					buffer.setNextReady(false);
