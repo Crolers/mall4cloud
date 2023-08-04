@@ -51,6 +51,7 @@ public class HttpHandler {
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 		PrintWriter printWriter = null;
 		try {
+			// 获取响应的输出流，通过该对象可以向客户端发送字符数据
 			printWriter = response.getWriter();
 			printWriter.write(XssUtil.clean(objectMapper.writeValueAsString(serverResponseEntity)));
 		}

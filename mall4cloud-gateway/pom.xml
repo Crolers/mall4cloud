@@ -49,6 +49,10 @@
             <groupId>com.github.xiaoymin</groupId>
             <artifactId>knife4j-openapi3-ui</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-core</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

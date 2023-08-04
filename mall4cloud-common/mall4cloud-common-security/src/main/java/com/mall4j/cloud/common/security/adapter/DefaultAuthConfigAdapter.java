@@ -34,7 +34,10 @@ public class DefaultAuthConfigAdapter implements AuthConfigAdapter {
 	/**
 	 * swagger
 	 */
-	private static final String DOC_URI = "/v3/api-docs";
+	private static final String DOC_URI = "/**/v3/api-docs/**";
+	private static final String SWAGGER = "/swagger-ui/index.html";
+
+	private static final String KNIFE4J = "/**/doc.html";
 
 	@Override
 	public List<String> pathPatterns() {
@@ -47,6 +50,8 @@ public class DefaultAuthConfigAdapter implements AuthConfigAdapter {
 		arrayList.add(DOC_URI);
 		arrayList.add(FEIGN_INSIDER_URI);
 		arrayList.add(EXTERNAL_URI);
+		arrayList.add(KNIFE4J);
+		arrayList.add(SWAGGER);
 		arrayList.addAll(Arrays.asList(paths));
 		return arrayList;
 	}

@@ -24,6 +24,7 @@ public class XssWrapper extends HttpServletRequestWrapper {
 	/**
 	 * 对数组参数进行特殊字符过滤
 	 */
+	// 后续的 Filter 在调用该方法获取参数时会对参数实现过滤
 	@Override
 	public String[] getParameterValues(String name) {
 		String[] values = super.getParameterValues(name);

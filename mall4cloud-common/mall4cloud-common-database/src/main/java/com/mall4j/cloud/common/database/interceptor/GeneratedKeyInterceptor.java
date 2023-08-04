@@ -59,7 +59,6 @@ public class GeneratedKeyInterceptor implements Interceptor {
 
     @Override
     public Object intercept(Invocation invocation) throws Throwable {
-
         MappedStatement mappedStatement = (MappedStatement)invocation.getArgs()[0];
 
         // 获取 SQL
@@ -82,13 +81,15 @@ public class GeneratedKeyInterceptor implements Interceptor {
             return invocation.proceed();
         }
 
+        // MappedStatement 的 ID 是由命名空间和语句的 ID 用点号连接而成的。
+        // 通常，命名空间是 Mapper 接口的类路径，语句的 ID 是 Mapper 接口中定义的方法名。
         // 插入
         if (mappedStatement.getId().contains(INSERT) || mappedStatement.getId().contains(SAVE)){
             generatedKey(dbObject);
         }
         // 批量插入
         else if (mappedStatement.getId().contains(BATCH_INSERT) || mappedStatement.getId().contains(BATCH_SAVE)){
-            // 获取批量查询的参数并生成主键
+            // 获取批量查询的参数并生成主键，批量查询时，Executor 类的插入参数对象为 Map
             if (parameter instanceof HashMap){
                 Object list = ((Map)parameter).get("list");
                 if (list instanceof ArrayList) {
@@ -124,20 +125,21 @@ public class GeneratedKeyInterceptor implements Interceptor {
         Field[] fieldList = parameter.getClass().getDeclaredFields();
 
         for (Field field : fieldList) {
-
+            // 第一个字段不是 Long 类型（ID），退出方法
             if (!field.getType().isAssignableFrom(Long.class)) {
                 break;
             }
-
+            // 得到有 @DistributedId 注解的字段
             DistributedId annotation = field.getAnnotation(DistributedId.class);
             if (annotation == null) {
                 break;
             }
-
+            // 通过调用setAccessible(true)，我们可以打破这种限制，使得私有成员可以被访问。
             field.setAccessible(true);
             if (field.get(parameter) != null) {
                 break;
             }
+            // 通过 annotation.value() 即 biz_tag 获取分布式ID
             ServerResponseEntity<Long> segmentIdResponseEntity = segmentFeignClient.getSegmentId(annotation.value());
             if (segmentIdResponseEntity.isSuccess()) {
                 // 这里设置分布式id

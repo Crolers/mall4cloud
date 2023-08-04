@@ -13,7 +13,7 @@ import org.jsoup.safety.Whitelist;
 public class XssUtil {
 
 	/**
-	 * 使用自带的 basicWithImages 白名单
+	 * 使用自带的 basicWithImages 白名单； Whitelist 可以帮助您防止恶意的或不安全的 HTML 内容注入到您的网站中，从而提高安全性。
 	 */
 	private static final Whitelist WHITE_LIST = Whitelist.relaxed();
 

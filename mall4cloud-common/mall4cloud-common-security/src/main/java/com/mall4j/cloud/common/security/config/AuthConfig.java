@@ -4,7 +4,6 @@ import cn.hutool.core.util.ArrayUtil;
 import com.mall4j.cloud.common.security.adapter.AuthConfigAdapter;
 import com.mall4j.cloud.common.security.adapter.DefaultAuthConfigAdapter;
 import com.mall4j.cloud.common.security.filter.AuthFilter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -23,6 +22,7 @@ import javax.servlet.DispatcherType;
 public class AuthConfig {
 
 	@Bean
+	// Bean 不存在时才注册
 	@ConditionalOnMissingBean
 	public AuthConfigAdapter authConfigAdapter() {
 		return new DefaultAuthConfigAdapter();
@@ -30,6 +30,7 @@ public class AuthConfig {
 
 	@Bean
 	@Lazy
+	// 注册 Filter，并设置 Filter 的相关配置。
 	public FilterRegistrationBean<AuthFilter> filterRegistration(AuthConfigAdapter authConfigAdapter, AuthFilter authFilter) {
 		FilterRegistrationBean<AuthFilter> registration = new FilterRegistrationBean<>();
 		// 添加过滤器

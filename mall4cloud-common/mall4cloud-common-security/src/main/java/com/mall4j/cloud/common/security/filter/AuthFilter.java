@@ -64,7 +64,7 @@ public class AuthFilter implements Filter {
 			httpHandler.printServerResponseToWeb(ServerResponseEntity.fail(ResponseEnum.UNAUTHORIZED));
 			return;
 		}
-
+		// URI == "/feign/token/checkToken" 无需后续 auth 校验
 		if (Auth.CHECK_TOKEN_URI.equals(req.getRequestURI())) {
 			chain.doFilter(req, resp);
 			return;
@@ -83,7 +83,6 @@ public class AuthFilter implements Filter {
 				}
 			}
 		}
-
 		String accessToken = req.getHeader("Authorization");
 
 		if (StrUtil.isBlank(accessToken)) {
