@@ -77,6 +77,7 @@ public class MenuPermissionServiceImpl implements MenuPermissionService {
 	}
 
 	@Override
+//	使用Spring的缓存注解来清除特定用户在两个不同缓存中的权限相关数据
 	@Caching(evict = {
 			@CacheEvict(cacheNames = CacheNames.USER_PERMISSIONS_KEY, key = "#sysType + ':' + #userId"),
 			@CacheEvict(cacheNames = CacheNames.MENU_ID_LIST_KEY, key = "#userId")
