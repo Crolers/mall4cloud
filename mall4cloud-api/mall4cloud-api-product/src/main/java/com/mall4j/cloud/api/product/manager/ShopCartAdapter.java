@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 
 /**
  * 购物车适配器
+ * 为购物车Controller做适配，通过内部调用 spuController、shopDetailController 提供的服务实现
  * @author FrozenWatermelon
  * @date 2020/12/07
  */
@@ -44,12 +45,13 @@ public class ShopCartAdapter {
      */
     public ServerResponseEntity<List<ShopCartItemVO>> getShopCartItems(ShopCartItemDTO shopCartItemParam) {
         ServerResponseEntity<List<ShopCartItemVO>> shopCartItemResponse;
-        // 当立即购买时，没有提交的订单是没有购物车信息的
+        // ShopCartItemDTO 为立即购买时提交的商品项,如果该值为空，则说明是从购物车进入，如果该值不为空则说明为立即购买
         if (shopCartItemParam != null) {
             shopCartItemResponse = conversionShopCartItem(shopCartItemParam);
         }
         // 从购物车提交订单
         else {
+            // 获取勾选的购物车商品条目
             shopCartItemResponse = shopCartFeignClient.getCheckedShopCartItems();
         }
         if (!shopCartItemResponse.isSuccess()) {
@@ -64,7 +66,7 @@ public class ShopCartAdapter {
     }
 
     /**
-     * 将参数转换成组装好的购物项
+     * 立即购买时，将参数转换成组装好的购物项
      * @param shopCartItemParam 购物项参数
      * @return 组装好的购物项
      */

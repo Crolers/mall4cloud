@@ -73,18 +73,19 @@ public class OrderController {
         if (addrFeign.isSuccess()){
             shopCartOrderMerger.setUserAddr(addrFeign.getData());
         }
+        // 此方法内分为立即购买或购物车中勾选购买
         ServerResponseEntity<List<ShopCartItemVO>> shopCartItemResponse = shopCartAdapter.getShopCartItems(orderParam.getShopCartItem());
         if (!shopCartItemResponse.isSuccess()) {
             return ServerResponseEntity.transform(shopCartItemResponse);
         }
         List<ShopCartItemVO> shopCartItems = shopCartItemResponse.getData();
-        // 购物车
+        // 将 购物车项 条目表组装成购物车
         List<ShopCartVO> shopCarts = shopCartAdapter.conversionShopCart(shopCartItems);
         // 重算一遍订单金额
         recalculateAmountWhenFinishingCalculateShop(shopCartOrderMerger, shopCarts);
         // 防止重复提交
         RedisUtil.STRING_REDIS_TEMPLATE.opsForValue().set(OrderCacheNames.ORDER_CONFIRM_UUID_KEY + CacheNames.UNION + userId, String.valueOf(userId));
-        // 保存订单计算结果缓存，省得重新计算并且用户确认的订单金额与提交的一致
+        // 保存订单计算结果缓存，省得重新计算并且用户确认的订单金额与提交的一致（避免受价格变动影响）
         cacheManagerUtil.putCache(OrderCacheNames.ORDER_CONFIRM_KEY,String.valueOf(userId),shopCartOrderMerger);
         return ServerResponseEntity.success(shopCartOrderMerger);
     }
@@ -123,6 +124,7 @@ public class OrderController {
         if (Objects.isNull(submitOrderPayAmountInfo) || Objects.isNull(submitOrderPayAmountInfo.getCreateTime()) ) {
             return ServerResponseEntity.fail(ResponseEnum.ORDER_NOT_EXIST);
         }
+        // 30min 后未支付则取消订单
         Date endTime =  DateUtil.offsetMinute(submitOrderPayAmountInfo.getCreateTime(), Constant.ORDER_CANCEL_TIME);
         SubmitOrderPayInfoVO orderPayInfoParam = new SubmitOrderPayInfoVO();
         orderPayInfoParam.setSpuNameList(spuNameList);

@@ -262,10 +262,11 @@ public class RedisUtil {
 		if (key.contains(StrUtil.SPACE) || value.contains(StrUtil.SPACE)) {
 			throw new Mall4cloudException(ResponseEnum.EXCEPTION);
 		}
-
+		// 这段 Lua 脚本实现了一种安全的分布式锁释放机制。它通过比较存储在 Redis 中的锁标识符与传递给脚本的标识符，来确认是否应该释放锁。
+		// 如果标识符匹配，则执行删除操作，释放锁，否则返回 0 表示释放失败。这样可以防止其他客户端在不具备锁的情况下误释放锁。
 		String script = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
 
-		//通过lure脚本原子验证令牌和删除令牌
+		//通过lua脚本原子验证令牌和删除令牌
 		Long result = STRING_REDIS_TEMPLATE.execute(new DefaultRedisScript<Long>(script, Long.class),
 				Collections.singletonList(key),
 				value);

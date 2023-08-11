@@ -36,12 +36,12 @@ public class AreaServiceImpl implements AreaService {
     @Cacheable(cacheNames = CacheNames.AREA_INFO_KEY, key = "'areaList'", sync = true)
     public List<AreaVO> getAreaListInfo() {
         List<AreaVO> areaList = areaMapper.getAreaListInfo();
-        for (AreaVO province:areaList){
+        for (AreaVO province : areaList){
             List<Long> cityAll = new ArrayList<>();
-            for (AreaVO city:province.getAreas()){
+            for (AreaVO city : province.getAreas()){
                 cityAll.add(city.getAreaId());
                 List<Long> areaAll = new ArrayList<>();
-                for (AreaVO area:city.getAreas()){
+                for (AreaVO area : city.getAreas()){
                     areaAll.add(area.getAreaId());
                 }
                 city.setAreaIds(areaAll);

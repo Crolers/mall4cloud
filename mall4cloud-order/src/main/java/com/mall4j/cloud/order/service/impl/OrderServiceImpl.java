@@ -89,6 +89,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public List<Long> submit(Long userId, ShopCartOrderMergerVO mergerOrder) {
+        // 保存订单信息并删除购物车项·
         List<Order> orders = saveOrder(userId, mergerOrder);
         List<Long> orderIds = new ArrayList<>();
         List<SkuStockLockDTO> skuStockLocks = new ArrayList<>();

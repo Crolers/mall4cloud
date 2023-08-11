@@ -17,6 +17,7 @@ public class PageUtil {
      */
     public static <T> PageVO<T> doPage(PageDTO pageDTO, ISelect select) {
 
+        // 在你需要进行分页的 MyBatis 查询方法前调用 PageHelper.startPage 静态方法即可，紧跟在这个方法后的第一个MyBatis 查询方法会被进行分页。
         PageSerializable<T> simplePageInfo = PageHelper.startPage(pageDTO).doSelectPageSerializable(select);
 
         PageVO<T> pageVO = new PageVO<>();

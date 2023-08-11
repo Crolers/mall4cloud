@@ -25,7 +25,7 @@ public class OssConfig {
     private Integer ossType;
 
     /**
-     * 最大上传长度单位m，默认20M
+     * 最大上传长度 单位m，默认20M
      */
     @Value("${biz.oss.maxLength:20}")
     private Integer maxLength;
